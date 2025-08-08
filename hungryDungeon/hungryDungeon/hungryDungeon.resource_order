@@ -1,6 +1,8 @@
 {
   "FolderOrderSettings": [
     {"name":"Animation Curves","order":12,"path":"folders/Animation Curves.yy",},
+    {"name":"Drago3D","order":16,"path":"folders/Drago3D.yy",},
+    {"name":"Geometry","order":1,"path":"folders/Drago3D/Geometry.yy",},
     {"name":"Extensions","order":14,"path":"folders/Extensions.yy",},
     {"name":"Fonts","order":7,"path":"folders/Fonts.yy",},
     {"name":"Notes","order":13,"path":"folders/Notes.yy",},
@@ -15,8 +17,6 @@
     {"name":"Sprites","order":1,"path":"folders/Sprites.yy",},
     {"name":"Tile Sets","order":2,"path":"folders/Tile Sets.yy",},
     {"name":"Timelines","order":8,"path":"folders/Timelines.yy",},
-    {"name":"Drago3D","order":16,"path":"folders/Drago3D.yy",},
-    {"name":"Geometry","order":1,"path":"folders/Drago3D/Geometry.yy",},
   ],
   "ResourceOrderSettings": [
     {"name":"d3d_draw_sphere_simple","order":11,"path":"scripts/d3d_draw_sphere_simple/d3d_draw_sphere_simple.yy",},

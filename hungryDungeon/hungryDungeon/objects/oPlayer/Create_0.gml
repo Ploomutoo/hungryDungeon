@@ -1,4 +1,6 @@
-global.tile_world = layer_tilemap_get_id("world")
+global.map = layer_tilemap_get_id("world")
+global.mapY= tilemap_get_width(global.map)
+global.mapX=tilemap_get_height(global.map)
 
 facing = 0
 image_angle = facing;
@@ -9,58 +11,45 @@ enum gdraw
 	distance
 }
 
-gonna_draw[0,0] = 0
-
-function scanFacing()
+function cast_ray(posX,posY,angle)
 {
-	var cast_dir_x = lengthdir_x(64,facing)
-	var cast_dir_y = lengthdir_y(64,facing)
+	var offsetX = lengthdir_x(32,angle)
+	var offsetY = lengthdir_y(32,angle)
+	var dof = 8
 	
-	var cast_perpendicular_x = lengthdir_x(64,facing+90)
-	var cast_perpendicular_y = lengthdir_y(64,facing+90)
+	var positionX1,positionY1
 	
-	var ix = x - cast_perpendicular_x*2
-	var iy = y - cast_perpendicular_y*2
-	var ix2= ix
-	var iy2= iy
+	var iterateX,iterateY
+	var tempX,tempY
+	var out1=-1,out2=-1
 	
-	for(var i = 4; i>=0; i--) //iterate perpendicularly
+	if(offsetX!=0) //if not a VERTICAL LINE do HORIZONTAL checks
 	{
-		for(var i2 = 0; i2<5; i2++) //iterate directly
+		positionX1 = posX+offsetX
+		positionY1 = (posY+offsetY)>>5<<5
+		
+		iterateX = 32
+		iterateY = 32*offsetY/offsetX
+		for(var dofIterator = 0; dofIterator<dof; dofIterator++)
 		{
-			var tgap = tilemap_get_at_pixel(global.tile_world,ix2,iy2)
-			if(tgap>1)
-			{
-				gonna_draw[i,gdraw.tile_index] = tgap;
-				gonna_draw[i,gdraw.distance]   = i2;
-				break;
-			}
-			else
-			{
-				gonna_draw[i,gdraw.tile_index] = 0;
-				gonna_draw[i,gdraw.distance]   = i2;
-			}
-			ix2 += cast_dir_x
-			iy2 += cast_dir_y
+			tempX = positionX1+iterateX*dofIterator
+			tempY = positionY1+iterateY*dofIterator
+			out1 = [tempX,tempY,tilemap_get_at_pixel(global.map,tempX,tempY)]
+			if (out1[2]>1) break;
 		}
-		
-		ix += cast_perpendicular_x
-		iy += cast_perpendicular_y
-		
-		ix2 = ix
-		iy2 = iy
-	}	
-	//hardcoding the 2 tiles on either side coz i cant figure out something smarter
-	ix = x + cast_perpendicular_x
-	iy = y + cast_perpendicular_y
-	tgap = tilemap_get_at_pixel(global.tile_world,ix,iy)
-	gonna_draw[5,gdraw.tile_index] = tgap;
-	gonna_draw[5,gdraw.distance]   = 0;
+	}
+	/*if(offsetY!=0) //if not a HORIZONTAL LINE do VERTICAL checks
+	{
+		iterateX = 32*offsetX/offsetY
+		iterateY = 32
+		for(dofIterator = 0; dofIterator<dof; dofIterator++)
+		{
+			tempX = positionX1+iterateX*dofIterator
+			tempY = positionY1+iterateY*dofIterator
+			out2 = [tempX,tempY,tilemap_get_at_pixel(global.map,tempX,tempY)]
+			if (out2[2]>1) break;
+		}
+	}*/
+	if(out1!=-1) draw_line(posX,posY,out1[0],out1[1])
 	
-	ix = x - cast_perpendicular_x
-	iy = y - cast_perpendicular_y
-	tgap = tilemap_get_at_pixel(global.tile_world,ix,iy)
-	gonna_draw[5,gdraw.tile_index] = tgap;
-	gonna_draw[5,gdraw.distance]   = 0;
 }
-scanFacing()

@@ -13,11 +13,13 @@ else if(keyboard_check_pressed(ord("S")))
 }
 else if(keyboard_check_pressed(ord("A")))
 {
-	facing+=90
+	facing+=45
+	if(facing>360) facing-=360
 }
 else if(keyboard_check_pressed(ord("D")))
 {
-	facing-=90
+	facing-=45
+	if(facing<0) facing+=360
 }
 else if(keyboard_check_pressed(ord("Q")))
 {
@@ -30,7 +32,7 @@ else if(keyboard_check_pressed(ord("E")))
 	desired_y-=lengthdir_y(64,facing+90)
 }
 
-var desired_tile = tilemap_get_at_pixel(global.tile_world,desired_x,desired_y)
+var desired_tile = tilemap_get_at_pixel(global.map,desired_x,desired_y)
 
 if (desired_tile<2)
 {
@@ -39,4 +41,3 @@ y = desired_y
 }
 
 image_angle = facing
-scanFacing()
