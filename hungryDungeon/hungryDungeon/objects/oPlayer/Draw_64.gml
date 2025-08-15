@@ -1,0 +1,1 @@
+draw_text(16,16,string(delta_time))
