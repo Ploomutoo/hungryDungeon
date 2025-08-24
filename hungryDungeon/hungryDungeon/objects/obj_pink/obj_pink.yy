@@ -25,10 +25,7 @@
   "physicsStartAwake": true,
   "properties": [],
   "solid": false,
-  "spriteId": {
-    "name": "spr_object_pink",
-    "path": "sprites/spr_object_pink/spr_object_pink.yy",
-  },
+  "spriteId": null,
   "spriteMaskId": null,
   "visible": true,
 }

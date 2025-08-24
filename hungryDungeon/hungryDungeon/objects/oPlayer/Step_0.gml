@@ -13,13 +13,13 @@ else if(keyboard_check_pressed(ord("S")))
 }
 else if(keyboard_check_pressed(ord("A")))
 {
-	facing+=45
-	if(facing>360) facing-=360
+	facing+=90
+	if(facing>360) { facing-=360; image_angle-=360 }
 }
 else if(keyboard_check_pressed(ord("D")))
 {
-	facing-=45
-	if(facing<0) facing+=360
+	facing-=90
+	if(facing<0) { facing+=360; image_angle+=360 }
 }
 else if(keyboard_check_pressed(ord("Q")))
 {
@@ -37,7 +37,7 @@ var desired_tile = tilemap_get_at_pixel(global.map,desired_x,desired_y)
 if (desired_tile<2)
 {
 	x = desired_x
-y = desired_y
+	y = desired_y
 }
 
-image_angle = facing
+image_angle+=(facing-image_angle)/6

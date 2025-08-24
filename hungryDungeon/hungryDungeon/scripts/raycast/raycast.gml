@@ -1,5 +1,3 @@
-//Developed by Eray Zesen (c) 2020-2021 erayzesen.itch.io
-
 ///@function raycast(_x,_y,_dir,_length,_per_pixel,_object,_tilemap_layer_name,_precise_mode)
 ///@param {int} _x	 start position x
 ///@param {int} _y	 start position y
@@ -10,22 +8,17 @@
 ///@param {string} [_tilemap_layer_name]	target tilemap layer name
 ///@param {bool} [_precise_mode] for the precise mask collisions(slow)
 ///@return {raycast_data}	
-function raycast(_x,_y,_dir,_length,_per_pixel,_object,_tilemap_layer_name,_precise_mode) {
-	
-	//Precise Mode required when you use collision mask shapes except the square on the objects
-	if(_precise_mode==undefined)_precise_mode=false;
-	
-	//_tilemap_layer_name is optional.  
-	if(_tilemap_layer_name==undefined || _tilemap_layer_name==noone)_tilemap_layer_name="";
+function raycast(_x,_y,_dir,_length,_per_pixel,_object=undefined,_tilemap_layer_name="",_precise_mode=true) {
 	//Saving first position
-	//var sx=_x;
-	//var sy=_y;
+	var sx=_x;
+	var sy=_y;
+	
 	//Current Positions
 	var cx=_x;
 	var cy=_y;
 	
 	//We will return this
-	raycast_data={
+	var raycast_data = {
 		type : rc_type.nothing, //all options nothing,tilemap,object
 		index : noone, //instance id or tilemap index of the collision
 		x : -1, // collision position x
@@ -33,90 +26,123 @@ function raycast(_x,_y,_dir,_length,_per_pixel,_object,_tilemap_layer_name,_prec
 	}
 
 	//Checking _tilemap_layer_name argument
-	var no_tilemaps=true;
+	var no_tilemaps = true;
+	var layer_id = undefined;
+	var tilemap_id = undefined;
 	if(_tilemap_layer_name!=""){
-		var layer_id=layer_get_id(_tilemap_layer_name);
-		var tilemap_id=layer_tilemap_get_id(layer_id);
-		no_tilemaps=false;
+		layer_id = layer_get_id(_tilemap_layer_name);
+		tilemap_id = layer_tilemap_get_id(layer_id);
+		no_tilemaps = false;
 	}
 	
-	//Playing while loop to check ray collisions
-	while(point_distance(_x,_y,cx,cy)<_length){
-		cx+=lengthdir_x(_per_pixel,_dir);
-		cy+=lengthdir_y(_per_pixel,_dir);
-		//For Tilemap
-		if(no_tilemaps==false){
+	var _x_move = lengthdir_x(_per_pixel,_dir);
+    var _y_move = lengthdir_y(_per_pixel,_dir);
+	
+	var _move_small = 0.5;
+	if (!_precise_mode)
+		_move_small = 1
+	
+    var _x_move_small= lengthdir_x(_move_small, _dir);
+    var _y_move_small= lengthdir_y(_move_small, _dir);
+	
+	var _length_sqr = _length * _length;
+	var _x_vec = 0;
+	var _y_vec = 0;
+	
+	var inc_amt = _per_pixel / _move_small;
+	
+	
+	if (!no_tilemaps){
+		while(_x_vec * _x_vec + _y_vec * _y_vec < _length_sqr){
+			cx+=_x_move;
+	        cy+=_y_move;
+			
 			var col_tile=tilemap_get_at_pixel(tilemap_id,cx,cy);
 			if(col_tile>0){
-				//Setting true positions of collision
-				while(tilemap_get_at_pixel(tilemap_id,cx,cy)){
-					cx-=lengthdir_x(1,_dir);
-					cy-=lengthdir_y(1,_dir);
+				for (var i = 0; i < inc_amt; i++){
+					if(!tilemap_get_at_pixel(tilemap_id,cx,cy))
+						break
+						
+					cx-=_x_move_small;
+					cy-=_y_move_small;
 				}
-				//We finded a collision and we're setting raycast_data
+				
 				raycast_data.type=rc_type.tilemap;
 				raycast_data.index=col_tile;
 				raycast_data.x=cx;
 				raycast_data.y=cy;
-				break;
+				return raycast_data
 			}
+			
+			
+			_x_vec = cx - _x;
+	        _y_vec = cy - _y;
 		}
-		//For Objects
-		if(is_array(_object)){
-			var obj_finded=false;
-			var i;
-			for(i=0;i<array_length(_object);i++){
-				var obj=_object[i];
-				var col_obj=collision_point(cx,cy,obj,_precise_mode,true);
-				if(col_obj!=noone){
-					//Setting true positions of collision
-					while(collision_point(cx,cy,obj,_precise_mode,true)!=noone){
-						cx-=lengthdir_x(1,_dir);
-						cy-=lengthdir_y(1,_dir);
-					}
-					//We finded a collision and we're setting raycast_data
-					raycast_data.type=rc_type.object;
-					raycast_data.index=col_obj;
-					raycast_data.x=cx;
-					raycast_data.y=cy;
-					obj_finded=true;
-					break;
+	}
+	
+	if (_object == undefined){
+		if(raycast_data.type==rc_type.nothing){
+			raycast_data.x=cx;
+			raycast_data.y=cy;
+		}
+
+		return raycast_data;
+	}
+		
+	var obj_finded=true;
+	var _array_length = 1
+	if(is_array(_object)){
+		obj_finded=false;
+		_array_length = array_length(_object);	
+	}
+	else{
+		_object = [_object]
+	}
+	
+	_x_vec = 0
+	_y_vec = 0
+	cx=sx;
+	cy=sy;
+	while(_x_vec * _x_vec + _y_vec * _y_vec < _length_sqr){
+		cx+=_x_move;
+	    cy+=_y_move;
+			
+		for (var i = 0; i < _array_length; i++){
+			var obj = _object[i];
+			var col_obj = collision_line(_x, _y, cx, cy, obj, _precise_mode, false);
+			if(col_obj != noone){
+				for (var j = 0; j < inc_amt; j++){
+					if(!collision_line(_x, _y, cx, cy,_object,_precise_mode,true))
+						break
+						
+					cx-=_x_move_small;
+					cy-=_y_move_small;
 				}
-			}
-			if(obj_finded)break;
-		}else if(_object!=noone){
-			var col_obj=collision_point(cx,cy,_object,_precise_mode,true);
-			if(col_obj!=noone){
-				//Setting true positions of collision
-				while(collision_point(cx,cy,_object,_precise_mode,true)!=noone){
-					cx-=lengthdir_x(1,_dir);
-					cy-=lengthdir_y(1,_dir);
-				}
-				//We finded a collision and we're setting raycast_data
+					
 				raycast_data.type=rc_type.object;
 				raycast_data.index=col_obj;
 				raycast_data.x=cx;
 				raycast_data.y=cy;
-				break;
+				return raycast_data
 			}
 		}
+		
+		_x_vec = cx - _x;
+	    _y_vec = cy - _y;
 	}
+	
+	
 	if(raycast_data.type==rc_type.nothing){
 		raycast_data.x=cx;
 		raycast_data.y=cy;
 	}
 
 	return raycast_data;
-
-
 }
+
 //Raycast Types
 enum rc_type{
 	nothing,
 	tilemap,
 	object
 }
-
-
-
-
