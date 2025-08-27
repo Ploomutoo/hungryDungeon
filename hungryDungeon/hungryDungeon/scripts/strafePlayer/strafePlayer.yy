@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"strafePlayer",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"strafePlayer",
+  "parent":{
+    "name":"PlayerScripts",
+    "path":"folders/Scripts/PlayerScripts.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

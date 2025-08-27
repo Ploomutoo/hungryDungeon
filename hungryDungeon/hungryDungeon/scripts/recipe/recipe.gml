@@ -7,6 +7,16 @@ function recipe(_name,_icon,_effect,_ingredients) constructor
 	icon = _icon
 	effect = _effect
 	ingredients = _ingredients
+	ingredIcons = ""
 	
+	for(var i = 0; i < array_length(ingredients); i++)
+	{
+		switch(ingredients[i])
+		{
+			case "Grain":
+			
+			break;
+		}
+	}
 	
 }

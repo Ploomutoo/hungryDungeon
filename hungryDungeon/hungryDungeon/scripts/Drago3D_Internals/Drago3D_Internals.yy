@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "Drago3D_Internals",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "Drago3D",
-    "path": "folders/Drago3D.yy",
+  "$GMScript":"v1",
+  "%Name":"Drago3D_Internals",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Drago3D_Internals",
+  "parent":{
+    "name":"Drago3D",
+    "path":"folders/Drago3D.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }
