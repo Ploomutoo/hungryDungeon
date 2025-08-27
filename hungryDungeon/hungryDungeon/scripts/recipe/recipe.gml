@@ -14,6 +14,9 @@ function recipe(_name,_icon,_effect,_ingredients) constructor
 		switch(ingredients[i])
 		{
 			case "Grain":
+			ingredIcons += "[sIconsEffect,0]"
+			break;
+			default:
 			
 			break;
 		}

@@ -38,7 +38,6 @@ for(var i = 0; i < room_width; i++)
 	var hit = false;
 	//was it the North/South or East/West side
 	var side;
-	var rayDistance = 0;
 	
 	//calculate step and sideDist
 	if(rayDirectionX < 0)
@@ -64,8 +63,10 @@ for(var i = 0; i < room_width; i++)
     }
 	
 	//DDA algorithm
+	
 	while(!hit)
 	{
+		
 		//jump to next map square in x or y direction
         if(sideDistX < sideDistY)
         {
@@ -93,6 +94,7 @@ for(var i = 0; i < room_width; i++)
 			hit = true;
 			blockType = world[mapY, mapX];
 		}
+		
 	}
 	
 	if(!hit)
@@ -109,8 +111,8 @@ for(var i = 0; i < room_width; i++)
 	
 	//shaded or not?
     shaded = false;
-    if(side == GRID_SIDES.NORTH_SOUTH)
-        shaded = true;
+    //if(side == GRID_SIDES.NORTH_SOUTH)
+    //    shaded = true;
 	
 	//textureSlice
     //Coordinate on the wall
@@ -186,7 +188,7 @@ for(var i = 0; i < room_width; i++)
 	if(shaded)
 		textureType ++;
 	
-	var drawColor = merge_color(c_white,c_black,rayDistance)
+	var drawColor = merge_color(c_black,c_white,100/dist)
 	draw_sprite_part_ext(texture, textureType, textureSlice, texY, 1, texHeight, i, wallStart-cutoff, textureWidthScale, texHeightScale * textureHeightScale, drawColor, 1);
 	
 	//draw the floor and ceiling with floor casting
